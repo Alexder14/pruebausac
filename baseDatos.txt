@@ -1,0 +1,77 @@
+CREATE TABLE TipoDocumento (
+    TipoDocumentoID SERIAL PRIMARY KEY,
+    Nombre VARCHAR(100)
+);
+
+INSERT INTO TipoDocumento (Nombre)
+VALUES ('Cédula de Identidad'),
+       ('Pasaporte'),
+       ('Seguro Social'),
+       ('Licencia de Conducir'),
+       ('Otros');
+
+CREATE TABLE Pais (
+    PaisID SERIAL PRIMARY KEY,
+    Nombre VARCHAR(100)
+);
+
+CREATE TABLE Departamento (
+    DepartamentoID SERIAL PRIMARY KEY,
+    Nombre VARCHAR(100),
+    PaisID INT,
+    FOREIGN KEY (PaisID) REFERENCES Pais(PaisID)
+);
+
+CREATE TABLE Municipio (
+    MunicipioID SERIAL PRIMARY KEY,
+    Nombre VARCHAR(100),
+    DepartamentoID INT,
+    FOREIGN KEY (DepartamentoID) REFERENCES Departamento(DepartamentoID)
+);
+
+CREATE TABLE Cliente (
+    ClienteID SERIAL PRIMARY KEY,
+    Nombres VARCHAR(100),
+    Apellidos VARCHAR(100),
+    RazonSocial VARCHAR(255),
+    Direccion VARCHAR(255),
+    PaisID INT,
+    DepartamentoID INT,
+    MunicipioID INT,
+    TipoDocumentoID INT,
+    NumeroDocumento VARCHAR(20),
+    FechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FechaModificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (PaisID) REFERENCES Pais(PaisID),
+    FOREIGN KEY (DepartamentoID) REFERENCES Departamento(DepartamentoID),
+    FOREIGN KEY (MunicipioID) REFERENCES Municipio(MunicipioID),
+    FOREIGN KEY (TipoDocumentoID) REFERENCES TipoDocumento(TipoDocumentoID)
+);
+
+CREATE TABLE Cuenta (
+    CuentaID SERIAL PRIMARY KEY,
+    ClienteID INT,
+    Saldo DECIMAL(10, 2),
+    FechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FechaModificacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ClienteID) REFERENCES Cliente(ClienteID)
+);
+
+CREATE TABLE Movimiento (
+    MovimientoID SERIAL PRIMARY KEY,
+    CuentaID INT,
+    TipoMovimiento VARCHAR(50),
+    Monto DECIMAL(10, 2),
+    FechaMovimiento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (CuentaID) REFERENCES Cuenta(CuentaID)
+);
+
+CREATE TABLE Auditoria (
+    AuditoriaID SERIAL PRIMARY KEY,
+    TipoOperacion VARCHAR(50),
+    TablaAfectada VARCHAR(50),
+    RegistroID INT,
+    FechaOperacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Usuario VARCHAR(50),
+    Detalles VARCHAR(255)
+);
